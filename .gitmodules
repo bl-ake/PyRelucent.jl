@@ -1,3 +1,0 @@
-[submodule "deps/relucent-py"]
-	path = deps/relucent-py
-	url = git@github.com:bl-ake/relucent.git

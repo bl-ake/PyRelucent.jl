@@ -6,24 +6,15 @@ using SHA
 const _relucent_module = Ref{Py}()
 
 _root_dir() = normpath(joinpath(@__DIR__, ".."))
-_submodule_dir() = joinpath(_root_dir(), "deps", "relucent-py")
 _python_executable() = pyconvert(String, pyimport("sys").executable)
 _importlib_util() = pyimport("importlib.util")
 _bootstrap_stamp_path() = joinpath(_root_dir(), ".relucent-bootstrap-stamp")
 
-function _submodule_rev()
-    try
-        return strip(readchomp(`git -C $(_submodule_dir()) rev-parse HEAD`))
-    catch
-        return "unknown"
-    end
-end
-
 function _bootstrap_fingerprint()
     parts = (
         "python=" * _python_executable(),
-        "submodule=" * _submodule_rev(),
         "cpu-index=https://download.pytorch.org/whl/cpu",
+        "relucent-spec=relucent",
     )
     return bytes2hex(sha1(join(parts, "\n")))
 end
@@ -68,21 +59,16 @@ end
 
 function _ensure_relucent!()
     if !_has_python_module("relucent")
-        _pip_install(["-e", _submodule_dir()])
+        # Force reinstall to recover from stale editable installs.
+        _pip_install(["--upgrade", "--force-reinstall", "relucent"])
     end
     pyimport("importlib").invalidate_caches()
-    try
-        _relucent_module[] = pyimport("relucent")
-    catch
-        # Fallback: import directly from vendored source checkout.
-        pyimport("sys").path.insert(0, joinpath(_submodule_dir(), "src"))
-        _relucent_module[] = pyimport("relucent")
-    end
+    _relucent_module[] = pyimport("relucent")
     return nothing
 end
 
 function __init__()
-    # Skip bootstrap when interpreter + submodule revision are unchanged.
+    # Skip bootstrap when interpreter + install inputs are unchanged.
     if !_bootstrap_is_current()
         _ensure_torch_cpu!()
         _ensure_relucent!()

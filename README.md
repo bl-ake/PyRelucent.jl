@@ -6,12 +6,11 @@ Julia wrapper for the Python package [`relucent`](https://github.com/bl-ake/relu
 
 ## Design
 
-- The upstream Python repo is vendored as a submodule at `deps/relucent-py`.
 - Julia uses `PythonCall.jl` to expose a thin wrapper around relucent's public API.
 - At module init, missing dependencies are installed with `pip` in the active PythonCall interpreter:
   - `torch` from the CPU wheel index
-  - `relucent` from the submodule path (`pip install -e`)
-- A local bootstrap fingerprint avoids reinstalling when the Python interpreter and vendored submodule revision are unchanged.
+  - `relucent` from PyPI
+- A local bootstrap fingerprint avoids reinstalling when the Python interpreter and install inputs are unchanged.
 
 ## Usage
 
