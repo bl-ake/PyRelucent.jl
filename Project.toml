@@ -5,9 +5,15 @@ version = "1.0.0-DEV"
 
 [compat]
 julia = "1.10.10"
+PythonCall = "0.9"
 
 [extras]
+PythonCall = "6099a3de-0909-46bc-b1f4-468b9a2dfc0d"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test"]
+test = ["PythonCall", "Test"]
+
+[deps]
+PythonCall = "6099a3de-0909-46bc-b1f4-468b9a2dfc0d"
+SHA = "ea8e919c-243c-51af-8825-aaa63cd721ce"
