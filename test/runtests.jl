@@ -1,16 +1,16 @@
-using Relucent
+using PyRelucent
 using PythonCall
 using Test
 
-@testset "Relucent.jl" begin
+@testset "PyRelucent.jl" begin
     @testset "Smoke test" begin
-        @test !isempty(Relucent.version())
+        @test !isempty(PyRelucent.version())
 
-        net = Relucent.mlp(widths=[2, 4, 1], add_last_relu=false)
+        net = PyRelucent.mlp(widths=[2, 4, 1], add_last_relu=false)
         @test pytruth(pyhasattr(net, "forward"))
 
-        cplx = Relucent.Complex(net)
-        complex_ty = pygetattr(Relucent.pyrelucent(), "Complex")
+        cplx = PyRelucent.Complex(net)
+        complex_ty = pygetattr(PyRelucent.pyrelucent(), "Complex")
         @test pytruth(pyisinstance(cplx, complex_ty))
     end
 
@@ -26,7 +26,7 @@ using Test
             nn.Linear(5, 1),
         )
 
-        cplx = Relucent.Complex(network)
+        cplx = PyRelucent.Complex(network)
         cplx.bfs()
 
         fig = cplx.plot()

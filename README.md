@@ -1,6 +1,6 @@
-# Relucent
+# PyRelucent
 
-[![Build Status](https://github.com/bl-ake/Relucent.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/bl-ake/Relucent.jl/actions/workflows/CI.yml?query=branch%3Amain)
+[![Build Status](https://github.com/bl-ake/PyRelucent.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/bl-ake/PyRelucent.jl/actions/workflows/CI.yml?query=branch%3Amain)
 
 Julia wrapper for the Python package [`relucent`](https://github.com/bl-ake/relucent).
 
@@ -12,10 +12,14 @@ Julia wrapper for the Python package [`relucent`](https://github.com/bl-ake/relu
   - `relucent` from PyPI
 - A local bootstrap fingerprint avoids reinstalling when the Python interpreter and install inputs are unchanged.
 
+## Versioning
+
+`PyRelucent.jl` mirrors the version of the upstream Python [`relucent`](https://github.com/bl-ake/relucent) package. A given `PyRelucent` version `x.y.z` wraps `relucent x.y.z` and exposes the same public API.
+
 ## Usage
 
 ```julia
-using Relucent
+using PyRelucent
 using PythonCall
 
 np = pyimport("numpy")
@@ -28,10 +32,10 @@ network = nn.Sequential(
     nn.Linear(10, 5),
     nn.ReLU(),
     nn.Linear(5, 1),
-)  # or conveniently, Relucent.mlp(widths=[2, 10, 5, 1])
+)  # or conveniently, PyRelucent.mlp(widths=[2, 10, 5, 1])
 
 # Initialize a Complex to track calculations
-cplx = Relucent.Complex(network)
+cplx = PyRelucent.Complex(network)
 
 # Calculate activation regions via local search
 cplx.bfs()
@@ -48,4 +52,4 @@ println(sum(pylen(poly.shis) for poly in cplx) / pylen(cplx))
 println(cplx.get_dual_graph())
 ```
 
-Use `Relucent.pyrelucent()` if you need direct access to the Python module.
+Use `PyRelucent.pyrelucent()` if you need direct access to the Python module.

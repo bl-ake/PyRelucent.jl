@@ -1,7 +1,7 @@
-name = "Relucent"
+name = "PyRelucent"
 uuid = "d4a0f349-cd98-4799-b7a0-96cbe38b225a"
 authors = ["Blake B. Gaines"]
-version = "1.0.0"
+version = "0.8.1"
 
 [compat]
 julia = "1.10.10"

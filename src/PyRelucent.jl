@@ -1,4 +1,4 @@
-module Relucent
+module PyRelucent
 
 using PythonCall
 using SHA
