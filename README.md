@@ -7,9 +7,7 @@ Julia wrapper for the Python package [`relucent`](https://github.com/bl-ake/relu
 ## Design
 
 - Julia uses `PythonCall.jl` to expose a thin wrapper around relucent's public API.
-- At module init, missing dependencies are installed with `pip` in the active PythonCall interpreter:
-  - `torch` from the CPU wheel index
-  - `relucent` from PyPI
+- At module init, `relucent` is installed with `pip` in the active PythonCall interpreter if not already present.
 - A local bootstrap fingerprint avoids reinstalling when the Python interpreter and install inputs are unchanged.
 
 ## Versioning
@@ -18,37 +16,31 @@ Julia wrapper for the Python package [`relucent`](https://github.com/bl-ake/relu
 
 ## Usage
 
+Networks are specified as a list of `(weight, bias)` pairs, where each weight is a `Matrix` with shape `(out, in)` and each bias is a `Vector` of length `out`.
+
 ```julia
 using PyRelucent
-using PythonCall
 
-np = pyimport("numpy")
-nn = pyimport("torch.nn")
+# Define a 2 → 10 → 5 → 1 network with random weights
+W1, b1 = randn(10, 2), randn(10)
+W2, b2 = randn(5, 10), randn(5)
+W3, b3 = randn(1,  5), randn(1)
 
-# Create Model
-network = nn.Sequential(
-    nn.Linear(2, 10),
-    nn.ReLU(),
-    nn.Linear(10, 5),
-    nn.ReLU(),
-    nn.Linear(5, 1),
-)  # or conveniently, PyRelucent.mlp(widths=[2, 10, 5, 1])
+# Initialize a Complex to track activation regions
+cplx = PyRelucent.Complex([(W1, b1), (W2, b2), (W3, b3)])
 
-# Initialize a Complex to track calculations
-cplx = PyRelucent.Complex(network)
-
-# Calculate activation regions via local search
+# Discover activation regions via local search
 cplx.bfs()
 
 # Plotting functions return Plotly figures
 fig = cplx.plot()
 fig.show()
 
-input_point = np.random.random((1, 2))
+input_point = randn(1, 2)
 p = cplx.point2poly(input_point)
 
 println(p.halfspaces[p.shis])
-println(sum(pylen(poly.shis) for poly in cplx) / pylen(cplx))
+println(sum(length(poly.shis) for poly in cplx) / length(cplx))
 println(cplx.get_dual_graph())
 ```
 

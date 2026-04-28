@@ -1,22 +1,18 @@
 module PyRelucent
 
 using PythonCall
-using SHA
 
 const _relucent_module = Ref{Py}()
 
-_root_dir() = normpath(joinpath(@__DIR__, ".."))
 _python_executable() = pyconvert(String, pyimport("sys").executable)
 _importlib_util() = pyimport("importlib.util")
 _bootstrap_stamp_path() = joinpath(first(DEPOT_PATH), "relucent", ".relucent-bootstrap-stamp")
 
 function _bootstrap_fingerprint()
-    parts = (
+    return join([
         "python=" * _python_executable(),
-        "cpu-index=https://download.pytorch.org/whl/cpu",
         "relucent-spec=relucent",
-    )
-    return bytes2hex(sha1(join(parts, "\n")))
+    ], "\n")
 end
 
 function _bootstrap_is_current()
@@ -24,7 +20,7 @@ function _bootstrap_is_current()
     if !isfile(stamp_path)
         return false
     end
-    if !_has_python_module("torch") || !_has_python_module("relucent")
+    if !_has_python_module("relucent")
         return false
     end
     try
@@ -57,13 +53,6 @@ function _pip_install(args::Vector{String})
     return nothing
 end
 
-function _ensure_torch_cpu!()
-    if !_has_python_module("torch")
-        _pip_install(["--index-url", "https://download.pytorch.org/whl/cpu", "torch"])
-    end
-    return nothing
-end
-
 function _ensure_relucent!()
     if !_has_python_module("relucent")
         # Force reinstall to recover from stale editable installs.
@@ -77,7 +66,6 @@ end
 function __init__()
     # Skip bootstrap when interpreter + install inputs are unchanged.
     if !_bootstrap_is_current()
-        _ensure_torch_cpu!()
         _ensure_relucent!()
         # Never fail import just because stamp persistence is unavailable.
         try
