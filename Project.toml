@@ -1,7 +1,7 @@
 name = "Relucent"
 uuid = "d4a0f349-cd98-4799-b7a0-96cbe38b225a"
 authors = ["Blake B. Gaines"]
-version = "1.0.1"
+version = "0.9.0"
 
 [compat]
 julia = "1.10.10"
